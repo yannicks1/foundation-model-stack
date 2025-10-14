@@ -54,6 +54,7 @@ class BambaConfig(ModelConfig):
     chunk_size: int = 256
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
+    gated_attn: bool = False
 
 
 class BambaBlock(nn.Module):
@@ -79,6 +80,7 @@ class BambaBlock(nn.Module):
                 position_encoder=rotary_emb,
                 fused=self.config.fused_weights,
                 linear_config=self.config.linear_config,
+                gated_attn=self.config.gated_attn,
             )
         else:
             self.ssm = SSM(

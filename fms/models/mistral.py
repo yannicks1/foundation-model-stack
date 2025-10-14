@@ -90,6 +90,7 @@ class MistralConfig(ModelConfig):
     fused_weights: bool = True  # FMS Specific -- For CPU/GPU = T, AIU = F
     pad_id: int = -1  # borrowed from granite, we do need it
     linear_config: Optional[Mapping[str, Any]] = None  # To suppor quantization
+    gated_attn: bool = False
 
 
 _7b_config = MistralConfig()
@@ -136,6 +137,7 @@ class MistralBlock(nn.Module):
             position_encoder=rotary_emb,
             fused=self.config.fused_weights,
             linear_config=self.config.linear_config,
+            gated_attn=self.config.gated_attn,
         )
         self.ff_sub_layer = GatedLinearUnit(
             self.config.emb_dim,

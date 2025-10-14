@@ -38,6 +38,7 @@ class GPTBigCodeConfig(ModelConfig):
         None  # pass as {"linear_type": str, <other kwargs>}
     )
     fused_weights: bool = True
+    gated_attn: bool = False
 
 
 class GPTBigCodeBlock(nn.Module):
@@ -58,6 +59,7 @@ class GPTBigCodeBlock(nn.Module):
             use_bias=True,
             fused=self.config.fused_weights,
             linear_config=self.config.linear_config,
+            gated_attn=self.config.gated_attn,
         )
 
         self.ff_sub_layer = FeedForwardBlock(

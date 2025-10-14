@@ -51,6 +51,7 @@ class GraniteConfig(ModelConfig):
     attention_multiplier: float = 1.0
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
+    gated_attn: bool = False
 
 
 class GraniteBlock(nn.Module):
@@ -95,6 +96,7 @@ class GraniteBlock(nn.Module):
             fused=self.config.fused_weights,
             linear_config=self.config.linear_config,
             scale_factor=self.config.attention_multiplier,
+            gated_attn=self.config.gated_attn,
         )
         self.ff_sub_layer = GatedLinearUnit(
             self.config.emb_dim,

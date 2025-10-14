@@ -40,6 +40,7 @@ class MixtralConfig(ModelConfig):
     rope_base: float = 1000000.0
     ntk_scaling: bool = False
     fused_weights: bool = True  # Doesn't work with False!
+    gated_attn: bool = False
 
 
 class MixtralBlock(nn.Module):
@@ -81,6 +82,7 @@ class MixtralBlock(nn.Module):
             p_dropout=self.config.p_dropout,
             use_bias=False,
             position_encoder=rotary_emb,
+            gated_attn=self.config.gated_attn,
         )
         self.ff_sub_layer = MOEFeedForward(
             self.config.num_experts,

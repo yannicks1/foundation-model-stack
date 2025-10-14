@@ -44,6 +44,7 @@ class RoBERTaConfig(ModelConfig):
     tie_heads: bool = False
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
+    gated_attn: bool = False
 
 
 @dataclass
@@ -71,6 +72,7 @@ class RoBERTaBlock(nn.Module):
             use_bias=True,
             fused=self.config.fused_weights,
             linear_config=self.config.linear_config,
+            gated_attn=self.config.gated_attn,
         )
 
         self.ff_sub_layer = FeedForwardBlock(

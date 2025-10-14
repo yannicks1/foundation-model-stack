@@ -57,6 +57,7 @@ class LLaMAConfig(ModelConfig):
     rope_scaling: dict = field(default_factory=lambda: {})
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
+    gated_attn: bool = False
 
 
 class LLaMABlock(nn.Module):
@@ -100,6 +101,7 @@ class LLaMABlock(nn.Module):
             position_encoder=rotary_emb,
             fused=self.config.fused_weights,
             linear_config=self.config.linear_config,
+            gated_attn=self.config.gated_attn,
         )
         self.ff_sub_layer = GatedLinearUnit(
             self.config.emb_dim,

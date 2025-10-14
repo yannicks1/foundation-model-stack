@@ -561,6 +561,8 @@ class MultiHeadAttention(nn.Module):
         fused: bool = True,
         linear_config: Optional[Mapping[str, Any]] = None,
         scale_factor: Optional[float] = None,
+        gated_attn: bool = False,
+        gate_act: Optional[Callable] = torch.sigmoid,
     ):
         super(MultiHeadAttention, self).__init__()
         self.nheads = nheads
@@ -573,6 +575,7 @@ class MultiHeadAttention(nn.Module):
         self.fused = fused
         self.linear_config = linear_config
         self.scale_factor = scale_factor
+        self.gated_attn = gated_attn
 
         self.in_proj: QKV = (FusedQKV if self.fused else UnfusedQKV)(
             self.emb_dim,
@@ -594,6 +597,15 @@ class MultiHeadAttention(nn.Module):
         if self.p_dropout:
             self.attn_dropout = nn.Dropout(self.p_dropout)
         self.position_encoder = position_encoder
+
+        # Gated Attention: https://arxiv.org/pdf/2505.06708
+        if self.gated_attn:
+            self.gate_act = gate_act
+            self.gate = get_linear(self.emb_dim,
+                self.nheads * self.emb_v_per_head,
+                bias=use_bias,
+                linear_config=linear_config,
+            )
 
     def reset_parameters(self):
         for m in self.modules():
@@ -699,6 +711,13 @@ class MultiHeadAttention(nn.Module):
             )
 
         attn = attn.view(batch_size, q_len, self.nheads * self.emb_v_per_head)
+
+        # Gated Attention: https://arxiv.org/pdf/2505.06708
+        if self.gated_attn:
+            gate_out = self.gate(q)
+            gate_out = gate_out.view(batch_size, q_len, self.nheads * self.emb_v_per_head)
+            attn = attn * self.gate_act(gate_out)
+
         out = self.dense(attn)
 
         # if use_cache=True, we return the hidden_state as well as the kv cache
