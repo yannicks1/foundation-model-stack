@@ -61,7 +61,7 @@ class MpnetConfig(ModelConfig):
     eos_token_id: int = 2
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 class MpnetBlock(nn.Module):

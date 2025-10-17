@@ -57,7 +57,7 @@ class LLaMAConfig(ModelConfig):
     rope_scaling: dict = field(default_factory=lambda: {})
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 class LLaMABlock(nn.Module):

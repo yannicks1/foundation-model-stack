@@ -40,7 +40,7 @@ class MixtralConfig(ModelConfig):
     rope_base: float = 1000000.0
     ntk_scaling: bool = False
     fused_weights: bool = True  # Doesn't work with False!
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 class MixtralBlock(nn.Module):

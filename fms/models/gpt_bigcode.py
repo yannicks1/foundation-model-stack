@@ -38,7 +38,7 @@ class GPTBigCodeConfig(ModelConfig):
         None  # pass as {"linear_type": str, <other kwargs>}
     )
     fused_weights: bool = True
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 class GPTBigCodeBlock(nn.Module):

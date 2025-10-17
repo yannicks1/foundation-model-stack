@@ -90,7 +90,7 @@ class MistralConfig(ModelConfig):
     fused_weights: bool = True  # FMS Specific -- For CPU/GPU = T, AIU = F
     pad_id: int = -1  # borrowed from granite, we do need it
     linear_config: Optional[Mapping[str, Any]] = None  # To suppor quantization
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 _7b_config = MistralConfig()

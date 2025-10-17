@@ -40,7 +40,7 @@ class SiglipVisionConfig(ModelConfig):
     attention_dropout: float = 0.0
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 class SiglipVisionEmbeddings(nn.Module):

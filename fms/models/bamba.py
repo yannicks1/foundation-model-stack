@@ -54,7 +54,7 @@ class BambaConfig(ModelConfig):
     chunk_size: int = 256
     linear_config: Optional[Mapping[str, Any]] = None
     fused_weights: bool = True
-    gated_attn: bool = False
+    gated_attn: bool = True
 
 
 class BambaBlock(nn.Module):
