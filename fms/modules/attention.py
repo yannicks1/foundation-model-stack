@@ -816,6 +816,8 @@ class TPMultiHeadAttention(MultiHeadAttention, TPModule):
                 ),
                 "dense": LinearModuleShardingInfo(self.dense, 1, [self.world_size]),
             }
+            if self.gated_attn:
+                module_sharding_info["gate"] = LinearModuleShardingInfo(self.gate, 0, [self.world_size])
         else:
             module_sharding_info = {
                 "query": LinearModuleShardingInfo(
@@ -829,6 +831,8 @@ class TPMultiHeadAttention(MultiHeadAttention, TPModule):
                 ),
                 "dense": LinearModuleShardingInfo(self.dense, 1, [self.world_size]),
             }
+            if self.gated_attn:
+                module_sharding_info["gate"] = LinearModuleShardingInfo(self.gate, 0, [self.world_size])
 
         type_sharding_map = get_all_linear_type_to_sharding_maps()
         unused_keys = type_sharding_map[self.linear_type](
