@@ -140,6 +140,7 @@ class MistralBlock(nn.Module):
             position_encoder=rotary_emb,
             fused=self.config.fused_weights,
             linear_config=self.config.linear_config,
+            has_sinks=self.config.sliding_window > 0,
         )
         self.ff_sub_layer = GatedLinearUnit(
             self.config.emb_dim,
@@ -164,6 +165,13 @@ class MistralBlock(nn.Module):
         use_cache=False,
         **attn_kwargs: Unpack[AttentionKwargs],
     ):
+        window_length = self.config.sliding_window
+        if window_length > 0:
+            old_attn_name = attn_kwargs.get("attn_name", "")
+            if "sdpa" in old_attn_name:
+                attn_kwargs["attn_name"] = "sdpa_with_sinks"
+            elif "paged" in old_attn_name:
+                attn_kwargs["attn_name"] = "spyre_paged_attn_with_sinks"
         # if the cache is not empty, we need to get the kv cache for self and cross attention
         self_attn_past_key_value = past_key_value_state
 
@@ -175,6 +183,7 @@ class MistralBlock(nn.Module):
             position_ids=position_ids,
             past_key_value_state=self_attn_past_key_value,
             use_cache=use_cache,
+            sliding_window=window_length,
             **attn_kwargs,
         )
         cache = None
@@ -193,6 +202,9 @@ class MistralBlock(nn.Module):
             x = self.dropout(x)
         # another residual
         x = x + residual
+
+        if window_length > 0:
+            attn_kwargs["attn_name"] = old_attn_name
 
         if use_cache:
             return (x, cache)
